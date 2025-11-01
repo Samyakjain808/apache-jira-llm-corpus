@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "source",
+    "key",
+    "project",
+    "title",
+    "issuetype",
+    "status",
+    "created",
+    "updated",
+    "tasks"
+  ],
+  "properties": {
+    "source": {
+      "type": "string",
+      "const": "apache_jira"
+    },
+    "key": {
+      "type": "string"
+    },
+    "project": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "issuetype": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "priority": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "assignee": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "reporter": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "created": {
+      "type": "string"
+    },
+    "updated": {
+      "type": "string"
+    },
+    "description_text": {
+      "type": "string"
+    },
+    "comments_text": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}
