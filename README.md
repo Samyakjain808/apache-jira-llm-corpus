@@ -1,22 +1,35 @@
-# Apache Jira → JSONL Corpus Pipeline (Interview-Ready)
+# Apache Jira → JSONL Corpus Pipeline (Interview-Ready 🚀)
 
-Production-grade, resumable scraper + transformer for Apache's public Jira projects producing LLM-ready JSONL, with tests, CI, schema validation, and Docker.
+A **production-grade, fault-tolerant data pipeline** that scrapes public **Apache Jira** projects and converts them into a **clean, LLM-ready JSONL corpus**.  
+Built for performance, recoverability, and data quality — complete with tests, CI, schema validation, and Docker support.
 
-**Highlights**
-- Robust 429/5xx handling, retries, jitter, timeouts
-- Resumable via SQLite
-- Deterministic JSONL + schema + validator
-- Tests (pytest) + GitHub Actions CI
-- Pre-commit (black, isort, flake8)
-- Dockerfile
+---
 
-## Quickstart
+## 🌟 Highlights
+
+- ⚙️ **Resumable & Fault-Tolerant:** SQLite-based state checkpointing with safe recovery  
+- 🔁 **Smart Retries & Backoff:** Handles `429` / `5xx` gracefully with exponential backoff  
+- 🧱 **Structured LLM Corpus:** Deterministic JSONL + schema + validator  
+- 🧪 **CI-Driven Quality:** Pytest + GitHub Actions (lint, test, style)  
+- 🧰 **Pre-commit & Code Quality:** Black • Isort • Flake8  
+- 🐳 **Docker-Ready:** Portable and reproducible anywhere  
+
+---
+
+## 🚀 Quickstart
+
 ```bash
+# Create virtual environment
 python -m venv .venv && source .venv/bin/activate
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Run scraper for 3 Apache projects (2018+ issues)
 python -m src.run --projects HADOOP KAFKA SPARK --since 2018-01-01 --out output
-# Output -> output/corpus/apache_jira_corpus.jsonl
-```
+
+# Output → output/corpus/apache_jira_corpus.jsonl
+````
 
 ## Validate output against schema
 ```bash
