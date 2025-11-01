@@ -40,9 +40,7 @@ def scrape_project(
     pbar = tqdm(desc=f"{project}", unit="issue")
 
     while True:
-        search = client.search_issues(
-            jql, start_at=start_at, max_results=max_results, fields=fields
-        )
+        search = client.search_issues(jql, start_at=start_at, max_results=max_results, fields=fields)
         issues = search.get("issues", [])
         if not issues:
             break

@@ -1,5 +1,6 @@
 from src.transform import normalize_issue, to_tasks
 
+
 def test_normalize_issue_minimal():
     issue = {
         "key": "TEST-1",
@@ -22,6 +23,7 @@ def test_normalize_issue_minimal():
     assert norm["project"] == "TEST"
     assert "Hello" in norm["description_text"]
     assert "Comment" in norm["comments_text"][0]
+
 
 def test_tasks_present():
     norm = {

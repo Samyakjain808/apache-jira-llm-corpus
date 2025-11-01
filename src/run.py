@@ -25,14 +25,10 @@ def setup_logging():
 def main():
     setup_logging()
     ap = argparse.ArgumentParser()
-    ap.add_argument(
-        "--projects", nargs="+", default=None, help="Project keys, e.g., HADOOP KAFKA SPARK"
-    )
+    ap.add_argument("--projects", nargs="+", default=None, help="Project keys, e.g., HADOOP KAFKA SPARK")
     ap.add_argument("--since", default=None, help="YYYY-MM-DD lower bound for updated")
     ap.add_argument("--out", default="output", help="Output base directory")
-    ap.add_argument(
-        "--max-issues", type=int, default=0, help="Cap issues per project (0 = unlimited)"
-    )
+    ap.add_argument("--max-issues", type=int, default=0, help="Cap issues per project (0 = unlimited)")
     args = ap.parse_args()
 
     cfg = yaml.safe_load(Path("config.yaml").read_text("utf-8"))

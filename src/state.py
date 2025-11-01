@@ -63,8 +63,7 @@ class State:
         try:
             cur = conn.cursor()
             cur.execute(
-                "INSERT INTO kv(k, v) VALUES(?, ?) "
-                "ON CONFLICT(k) DO UPDATE SET v=excluded.v;",
+                "INSERT INTO kv(k, v) VALUES(?, ?) " "ON CONFLICT(k) DO UPDATE SET v=excluded.v;",
                 (key, json.dumps(value)),
             )
             conn.commit()
