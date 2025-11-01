@@ -1,3 +1,4 @@
+# src/jira_client.py
 from __future__ import annotations
 import time
 import random
@@ -12,6 +13,22 @@ DEFAULT_HEADERS = {
 
 log = logging.getLogger("jira")
 
+# ---- module-level helpers (no self!) ----
+def giveup_http_error(e: Exception) -> bool:
+    """
+    Stop retrying on client errors (4xx) EXCEPT 429.
+    That includes 401/403 which are often permission-restricted resources.
+    """
+    if isinstance(e, httpx.HTTPStatusError):
+        status = e.response.status_code
+        return (400 <= status < 500) and status != 429
+    return False
+
+def on_backoff(details):
+    wait = details.get("wait", 0.0)
+    tries = details.get("tries", 0)
+    log.warning("Retrying HTTP call (try %s, wait %.2fs)", tries, wait)
+
 class JiraClient:
     def __init__(self, base_url: str, timeout_s: int = 15, min_delay_ms=250, max_delay_ms=1500, max_retries=8):
         self.base_url = base_url.rstrip("/")
@@ -23,21 +40,12 @@ class JiraClient:
     def _polite_sleep(self):
         time.sleep(random.uniform(self.min_delay_ms, self.max_delay_ms) / 1000.0)
 
-    def _backoff_hdlr(self, details):
-        log.warning("Retrying %s: try %s, wait %.2fs", details.get("target"), details.get("tries"), details.get("wait"))
-
-    def _giveup(self, e: Exception):
-        if isinstance(e, httpx.HTTPStatusError):
-            status = e.response.status_code
-            return 400 <= status < 500 and status != 429
-        return False
-
     @backoff.on_exception(
         backoff.expo,
         (httpx.TransportError, httpx.ReadTimeout, httpx.HTTPStatusError),
         max_tries=8,
-        giveup=_giveup,
-        on_backoff=_backoff_hdlr,
+        giveup=giveup_http_error,
+        on_backoff=on_backoff,
         jitter=backoff.full_jitter,
     )
     def _get(self, path: str, params: Optional[Dict[str, Any]] = None) -> httpx.Response:
@@ -52,8 +60,9 @@ class JiraClient:
                     delay = int(retry_after)
                 except Exception:
                     pass
-            log.warning("429 received. Sleeping for %ss", delay)
+            log.warning("429 Too Many Requests. Sleeping for %ss", delay)
             time.sleep(delay)
+            # Raise to trigger backoff chain
             resp.raise_for_status()
         resp.raise_for_status()
         return resp

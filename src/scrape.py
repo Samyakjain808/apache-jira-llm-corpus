@@ -4,6 +4,7 @@ from typing import Dict, List, Any
 import json
 from tqdm import tqdm
 import logging
+import httpx
 
 from .jira_client import JiraClient
 from .state import State
@@ -42,20 +43,40 @@ def scrape_project(
 
         for issue in issues:
             key = issue.get("key")
-            full = client.get_issue(key)
+
+            # Fetch full issue; skip if restricted
+            try:
+                full = client.get_issue(key)
+            except httpx.HTTPStatusError as e:
+                status = e.response.status_code
+                if status in (401, 403):
+                    log.warning("Skipping restricted issue %s (status %s)", key, status)
+                    continue
+                raise
+
+            # Fetch comments with pagination; skip if restricted
             comments_all: List[Dict[str, Any]] = []
             c_start = 0
             while True:
-                comments_page = client.get_comments(key, start_at=c_start, max_results=100)
+                try:
+                    comments_page = client.get_comments(key, start_at=c_start, max_results=100)
+                except httpx.HTTPStatusError as e:
+                    status = e.response.status_code
+                    if status in (401, 403):
+                        log.warning("Skipping comments for %s (status %s)", key, status)
+                        break
+                    raise
+
                 c_total = comments_page.get("total", 0)
-                comments_all.extend(comments_page.get("comments", []))
-                c_count = len(comments_page.get("comments", []))
-                c_start += c_count
-                if c_start >= c_total or c_count == 0:
+                page_comments = comments_page.get("comments", []) or []
+                comments_all.extend(page_comments)
+                c_start += len(page_comments)
+                if c_start >= c_total or len(page_comments) == 0:
                     break
 
             full["__comments"] = comments_all
 
+            # Write snapshot
             snap_path = raw_dir / f"{key}.json"
             with open(snap_path, "w", encoding="utf-8") as f:
                 json.dump(full, f, ensure_ascii=False)
