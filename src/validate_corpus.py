@@ -1,7 +1,10 @@
 from __future__ import annotations
-import argparse, json
-from jsonschema import Draft202012Validator
+
+import argparse
+import json
 from pathlib import Path
+
+from jsonschema import Draft202012Validator
 
 
 def main():

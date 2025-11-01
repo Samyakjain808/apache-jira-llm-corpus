@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 import re
-from bs4 import BeautifulSoup
+
 import html2text
+from bs4 import BeautifulSoup
 
 html_converter = html2text.HTML2Text()
 html_converter.ignore_links = True

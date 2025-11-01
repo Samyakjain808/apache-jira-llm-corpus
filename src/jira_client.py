@@ -1,11 +1,13 @@
 # src/jira_client.py
 from __future__ import annotations
-import time
-import random
-from typing import Any, Dict, List, Optional
-import httpx
-import backoff
+
 import logging
+import random
+import time
+from typing import Any, Dict, List, Optional
+
+import backoff
+import httpx
 
 DEFAULT_HEADERS = {"User-Agent": "ApacheJiraCorpusBot/1.0 (+https://github.com/your-org)"}
 

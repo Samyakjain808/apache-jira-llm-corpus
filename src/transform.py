@@ -1,7 +1,9 @@
 from __future__ import annotations
-from pathlib import Path
-from typing import Dict, Any, List
+
 import json
+from pathlib import Path
+from typing import Any, Dict, List
+
 from .common import html_to_text, safe_get
 
 

@@ -1,6 +1,8 @@
-from src.state import State
-from pathlib import Path
 import tempfile
+from pathlib import Path
+
+from src.state import State
+
 
 def test_state_roundtrip():
     with tempfile.TemporaryDirectory() as td:

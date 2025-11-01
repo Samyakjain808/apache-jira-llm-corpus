@@ -1,14 +1,16 @@
 from __future__ import annotations
-from pathlib import Path
-from typing import Dict, List, Any
-import json
-from tqdm import tqdm
-import logging
-import httpx
 
+import json
+import logging
+from pathlib import Path
+from typing import Any, Dict, List
+
+import httpx
+from tqdm import tqdm
+
+from .common import safe_get
 from .jira_client import JiraClient
 from .state import State
-from .common import safe_get
 
 log = logging.getLogger("scrape")
 
