@@ -12,8 +12,10 @@ from .common import safe_get
 
 log = logging.getLogger("scrape")
 
+
 def ensure_dir(p: str | Path):
     Path(p).mkdir(parents=True, exist_ok=True)
+
 
 def scrape_project(
     project: str,
@@ -36,7 +38,9 @@ def scrape_project(
     pbar = tqdm(desc=f"{project}", unit="issue")
 
     while True:
-        search = client.search_issues(jql, start_at=start_at, max_results=max_results, fields=fields)
+        search = client.search_issues(
+            jql, start_at=start_at, max_results=max_results, fields=fields
+        )
         issues = search.get("issues", [])
         if not issues:
             break

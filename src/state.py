@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS cursors(
 );
 """
 
+
 class State:
     def __init__(self, db_path: str):
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
@@ -29,7 +30,13 @@ class State:
             return 0, None, None
         return int(cur[0]), cur[1], cur[2]
 
-    def update(self, project: str, start_at: int, last_issue_key: Optional[str], watermark_updated: Optional[str]):
+    def update(
+        self,
+        project: str,
+        start_at: int,
+        last_issue_key: Optional[str],
+        watermark_updated: Optional[str],
+    ):
         self.conn.execute(
             "INSERT INTO cursors(project, start_at, last_issue_key, watermark_updated) VALUES(?,?,?,?)\n"
             "ON CONFLICT(project) DO UPDATE SET start_at=excluded.start_at, last_issue_key=excluded.last_issue_key, watermark_updated=excluded.watermark_updated",

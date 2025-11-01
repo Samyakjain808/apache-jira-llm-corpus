@@ -3,6 +3,7 @@ import argparse, json
 from jsonschema import Draft202012Validator
 from pathlib import Path
 
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--path", required=True, help="Path to JSONL file")
@@ -24,6 +25,7 @@ def main():
         print("OK: All records validate against schema")
     else:
         print(f"Validation finished with {errors} error(s)")
+
 
 if __name__ == "__main__":
     main()

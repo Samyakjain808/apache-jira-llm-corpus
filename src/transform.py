@@ -4,6 +4,7 @@ from typing import Dict, Any, List
 import json
 from .common import html_to_text, safe_get
 
+
 def normalize_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     f = issue.get("fields", {})
     desc_html = f.get("description")
@@ -26,6 +27,7 @@ def normalize_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
         "comments_text": [html_to_text(safe_get(c, "body")) for c in comments],
     }
 
+
 def to_tasks(issue: Dict[str, Any]) -> List[Dict[str, Any]]:
     body = (issue.get("description_text") or "").strip()
     comments_txt = "\n\n".join(issue.get("comments_text") or [])
@@ -33,38 +35,47 @@ def to_tasks(issue: Dict[str, Any]) -> List[Dict[str, Any]]:
 
     tasks = []
     if context:
-        tasks.append({
-            "task": "summarization",
-            "instruction": "Summarize the following Jira issue discussion in 2-3 sentences.",
-            "input": context,
-            "target": None
-        })
+        tasks.append(
+            {
+                "task": "summarization",
+                "instruction": "Summarize the following Jira issue discussion in 2-3 sentences.",
+                "input": context,
+                "target": None,
+            }
+        )
 
     if issue.get("priority"):
-        tasks.append({
-            "task": "classification_priority",
-            "instruction": "Classify the issue priority (e.g., Blocker, Critical, Major, Minor, Trivial).",
-            "input": context or issue.get("title"),
-            "target": issue.get("priority")
-        })
+        tasks.append(
+            {
+                "task": "classification_priority",
+                "instruction": "Classify the issue priority (e.g., Blocker, Critical, Major, Minor, Trivial).",
+                "input": context or issue.get("title"),
+                "target": issue.get("priority"),
+            }
+        )
     if issue.get("issuetype"):
-        tasks.append({
-            "task": "classification_type",
-            "instruction": "Classify the issue type (Bug, Improvement, New Feature, Task, etc.).",
-            "input": context or issue.get("title"),
-            "target": issue.get("issuetype")
-        })
+        tasks.append(
+            {
+                "task": "classification_type",
+                "instruction": "Classify the issue type (Bug, Improvement, New Feature, Task, etc.).",
+                "input": context or issue.get("title"),
+                "target": issue.get("issuetype"),
+            }
+        )
 
     title = issue.get("title") or ""
     if title and context:
-        tasks.append({
-            "task": "qa_extractive",
-            "instruction": f"Question: What is the main problem described in '{title}'? Answer concisely.",
-            "input": context,
-            "target": None
-        })
+        tasks.append(
+            {
+                "task": "qa_extractive",
+                "instruction": f"Question: What is the main problem described in '{title}'? Answer concisely.",
+                "input": context,
+                "target": None,
+            }
+        )
 
     return tasks
+
 
 def transform_raw(raw_root: str, out_jsonl: str):
     Path(out_jsonl).parent.mkdir(parents=True, exist_ok=True)

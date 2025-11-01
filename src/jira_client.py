@@ -7,11 +7,10 @@ import httpx
 import backoff
 import logging
 
-DEFAULT_HEADERS = {
-    "User-Agent": "ApacheJiraCorpusBot/1.0 (+https://github.com/your-org)"
-}
+DEFAULT_HEADERS = {"User-Agent": "ApacheJiraCorpusBot/1.0 (+https://github.com/your-org)"}
 
 log = logging.getLogger("jira")
+
 
 # ---- module-level helpers (no self!) ----
 def giveup_http_error(e: Exception) -> bool:
@@ -24,13 +23,17 @@ def giveup_http_error(e: Exception) -> bool:
         return (400 <= status < 500) and status != 429
     return False
 
+
 def on_backoff(details):
     wait = details.get("wait", 0.0)
     tries = details.get("tries", 0)
     log.warning("Retrying HTTP call (try %s, wait %.2fs)", tries, wait)
 
+
 class JiraClient:
-    def __init__(self, base_url: str, timeout_s: int = 15, min_delay_ms=250, max_delay_ms=1500, max_retries=8):
+    def __init__(
+        self, base_url: str, timeout_s: int = 15, min_delay_ms=250, max_delay_ms=1500, max_retries=8
+    ):
         self.base_url = base_url.rstrip("/")
         self.client = httpx.Client(timeout=timeout_s, headers=DEFAULT_HEADERS)
         self.min_delay_ms = min_delay_ms
@@ -67,7 +70,9 @@ class JiraClient:
         resp.raise_for_status()
         return resp
 
-    def search_issues(self, jql: str, start_at=0, max_results=100, fields: Optional[List[str]] = None):
+    def search_issues(
+        self, jql: str, start_at=0, max_results=100, fields: Optional[List[str]] = None
+    ):
         params = {
             "jql": jql,
             "startAt": start_at,
@@ -82,5 +87,7 @@ class JiraClient:
         return r.json()
 
     def get_comments(self, key: str, start_at=0, max_results=100):
-        r = self._get(f"/rest/api/2/issue/{key}/comment", {"startAt": start_at, "maxResults": max_results})
+        r = self._get(
+            f"/rest/api/2/issue/{key}/comment", {"startAt": start_at, "maxResults": max_results}
+        )
         return r.json()

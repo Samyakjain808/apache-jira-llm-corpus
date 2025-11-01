@@ -10,6 +10,7 @@ html_converter.body_width = 0
 
 _control_re = re.compile(r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]")
 
+
 def html_to_text(html: str | None) -> str:
     if not html:
         return ""
@@ -20,6 +21,7 @@ def html_to_text(html: str | None) -> str:
     text = _control_re.sub("", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text
+
 
 def safe_get(d: dict, *path, default=None):
     cur = d
